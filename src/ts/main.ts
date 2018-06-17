@@ -1,8 +1,8 @@
 import { hello } from "./hello";
 
 function show(divname : string, name : string) {
-    const div = document.getElementById(divname);
-    div.innerHTML = hello(name);
+    const elt = document.getElementById(divname);
+    elt.innerText = hello(name);
 }
 
-show('greeting', 'peter'); 
+show('greeting', 'jaaa'); 
