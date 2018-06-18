@@ -1,14 +1,16 @@
+const G : number = 3;
+     
 abstract class Obj {
     x : number;
     y : number;
-    v : number;
+    vx : number = 0;
+    vy : number = 0;
     timeStamp : number;
 
 
     constructor(x : number, y : number) {
         this.x = x;
         this.y = y;
-        this.v = 0;
         this.updateTimestamp();
     }
 
@@ -20,7 +22,7 @@ abstract class Obj {
         let t = new Date().getTime() - this.timeStamp;
         this.stepBehavior();
         this.updateTimestamp();
-        console.log('v', this.v);
+        console.log('vx', this.vx);
     }
 
     public stepBehavior() : void {
@@ -36,16 +38,27 @@ export class Player extends Obj {
     public onKeypress(ev : KeyboardEvent) {
         let vv = 5;
         if (ev.key == 'ArrowRight') {
-            this.v += vv;
+            this.vx += vv;
         }
         if (ev.key == 'ArrowLeft') {
-            this.v -= vv;
+            this.vx -= vv;
         }
+        if (ev.key == 'ArrowUp') {
+            this.vy -= vv;
+        }    
+        if (ev.key == 'ArrowDown') {
+            this.vy += vv;
+        }               
     }
 
     public stepBehavior() : void {
-        this.v *= 0.8;
-        this.x += this.v * 2;
+        this.vx *= 0.8;
+        this.vy *= 0.8;
+        this.x += this.vx * 2;
+        this.y += G + this.vy * 2;
+
+        if (this.y > 500) this.y = 500;
+
     }
 }
 
