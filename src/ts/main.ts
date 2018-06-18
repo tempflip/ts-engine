@@ -1,8 +1,12 @@
-import { hello } from "./hello";
+import {Player, World} from "./engine";
 
-function show(divname : string, name : string) {
-    const elt = document.getElementById(divname);
-    elt.innerText = hello(name);
-}
+let canvas = document.getElementById('canv');
 
-show('greeting', 'jaaa'); 
+let p = new Player(100, 150);
+let w = new World(canvas);
+w.registerObj(p);
+
+document.addEventListener('keydown',(ev) => { p.onKeypress(ev) });
+
+w.fire(window, 10);
+
