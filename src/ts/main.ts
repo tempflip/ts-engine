@@ -2,7 +2,7 @@ import {Player, World, Brick} from "./engine";
 
 let canvas = document.getElementById('canv');
 
-let p = new Player(300, 50);
+let p = new Player(500, 550);
 let w = new World(canvas);
 w.registerObj(p);
 

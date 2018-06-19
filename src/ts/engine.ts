@@ -3,8 +3,8 @@ const G : number = 3;
 abstract class Obj {
     x : number;
     y : number;
-    w : number = 19;
-    h : number = 19;
+    w : number = 50;
+    h : number = 50;
     vx : number = 0;
     vy : number = 0;
     timeStamp : number;
@@ -50,7 +50,7 @@ export class Player extends Obj {
             this.vx -= vv;
         }
         if (ev.key == 'ArrowUp') {
-            this.vy -= vv;
+            this.vy -= vv * 5;
         }    
         if (ev.key == 'ArrowDown') {
             this.vy += vv;
@@ -64,13 +64,11 @@ export class Player extends Obj {
         let newY = this.y + this.vy * 2 + G;
         
         // if (!this.world.isItCollision(newX, newY, this.w, this.h)) {
-        if (!this.world.isItCollision(this)) {
+        if (!this.world.isItCollision(this, newX, newY, newX + this.w, newY + this.h)) {
             this.x = newX;
             this.y = newY;
         }
         
-        // if (this.y > 500) this.y = 500;
-
     }
 }
 
@@ -113,27 +111,31 @@ export class World {
         win.setInterval(() => {this.step();}, ms);
     }
 
-    public isItCollision(obj : Obj) {
+    public isItCollision(obj : Obj, x1, y1, x2, y2) {
         for (let o of this.objList) {
-
             if (o == obj) continue;
-            let oxx = o.x + o.w;
-            let oyy = o.y + o.h;
+            let ox1 = o.x;
+            let oy1 = o.y;
+            let ox2 = o.x + o.w;
+            let oy2 = o.y + o.h;
+            
+            let ruleY1 = y1 >= oy1 && y1 <= oy2;
+            let ruleY2 = y2 >= oy1 && y2 <= oy2;
 
-            let objxx = obj.x + obj.w
-            let objyy = obj.y + obj.h;
+            let ruleX1 = x1 >= ox1 && x1 <= ox2;
+            let ruleX2 = x2 >= ox1 && x2 <= ox2;
 
+            // and the inverted rules
 
+            let iruleY1 = oy1 >= y1 && oy1 <= y2;
+            let iruleY2 = oy2 >= y1 && oy2 <= y2;
 
-            let xrule1 : Boolean = objxx > o.x && obj.x < oxx;
-            let xrule2 : Boolean= obj.x > o.x && obj.x < oxx;
-            let yrule1 : Boolean = obj.y < o.y && objyy >= o.y;
-            let yrule2 : Boolean= obj.y > o.y && obj.y < oyy;
+            let iruleX1 = ox1 >= x1 && ox1 <= x2;
+            let iruleX2 = ox2 >= x1 && ox2 <= x2;            
 
-            if ((yrule1 || yrule2) && (xrule1)) {
-                console.log(yrule1, yrule2, o.y, oyy, obj.y, objyy);
-                return true;
-            }
+            if (   (ruleY1 || ruleY2) && (ruleX1 || ruleX2)
+                || (iruleY1 || iruleY2) && (iruleX1 || iruleX2)
+                ) return true;
         }
         return false;
     }
