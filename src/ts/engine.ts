@@ -24,7 +24,6 @@ abstract class Obj {
         let t = new Date().getTime() - this.timeStamp;
         this.stepBehavior();
         this.updateTimestamp();
-        // console.log('vx', this.vx);
     }
 
     public stepBehavior() : void {
@@ -60,15 +59,26 @@ export class Player extends Obj {
     public stepBehavior() : void {
         this.vx *= 0.8;
         this.vy *= 0.8;
-        let newX = this.x + this.vx * 2;
-        let newY = this.y + this.vy * 2 + G;
         
-        // if (!this.world.isItCollision(newX, newY, this.w, this.h)) {
-        if (!this.world.isItCollision(this, newX, newY, newX + this.w, newY + this.h)) {
-            this.x = newX;
-            this.y = newY;
+        let dx = Math.floor(this.vx * 2);
+        let dy = Math.floor(this.vy * 2 + G);
+        // console.log(this.up, dy);
+
+        while (true) {
+            let newX = this.x + dx;
+            let newY = this.y + dy;
+            if (!this.world.isItCollision(this, newX, newY, newX + this.w, newY + this.h)) {
+                this.x = newX;
+                this.y = newY;
+                break;
+            } else if (dy != 0) {
+                if (dy > 0) dy -= 1;
+                else if (dy < 0) dy += 1;
+            } else {
+                break;
+            }
+            
         }
-        
     }
 }
 
