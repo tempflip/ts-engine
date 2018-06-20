@@ -9,6 +9,7 @@ abstract class Obj {
     vy : number = 0;
     timeStamp : number;
     world : World;
+    img : HTMLImageElement;
 
     constructor(x : number, y : number) {
         this.x = x;
@@ -16,8 +17,14 @@ abstract class Obj {
         this.updateTimestamp();
     }
 
+    public setImage(img :HTMLImageElement) {
+        this.img = img;
+        this.w = img.width;
+        this.h = img.height;
+    }
+
     public updateTimestamp() : void {
-    this.timeStamp = new Date().getTime();
+        this.timeStamp = new Date().getTime();
     }
 
     public step() : void {
@@ -105,7 +112,11 @@ export class World {
 
     public draw() : void {
         for (let o of this.objList) {
-            this.ctx.fillRect(o.x, o.y, o.w, o.h);
+            if (o.img) {
+                this.ctx.drawImage(o.img, o.x, o.y);
+            } else {
+                this.ctx.fillRect(o.x, o.y, o.w, o.h);
+            }
         }
     }
 
