@@ -7,6 +7,8 @@ abstract class Obj {
     h : number = 50;
     vx : number = 0;
     vy : number = 0;
+    ax : number = 0;
+    ay : number = 0;
     timeStamp : number;
     world : World;
     img : HTMLImageElement;
@@ -64,16 +66,20 @@ export class Player extends Obj {
     }
 
     public stepBehavior() : void {
-        this.vx *= 0.8;
-        this.vy *= 0.8;
+        this.vx = this.vx * 0.8;
+        this.vy = this.vy * 0.8;
         
-        let dx = Math.floor(this.vx * 2);
-        let dy = Math.floor(this.vy * 2 + G);
-        // console.log(this.up, dy);
+        let roundFunc : any;
+        if (this.vx >= 0) roundFunc = Math.floor;
+        else roundFunc = Math.ceil;
+
+        let dx = roundFunc(this.vx * 2);
+        let dy = roundFunc(this.vy * 2 + G);
 
         while (true) {
             let newX = this.x + dx;
             let newY = this.y + dy;
+
             if (!this.world.isItCollision(this, newX, newY, newX + this.w, newY + this.h)) {
                 this.x = newX;
                 this.y = newY;

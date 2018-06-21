@@ -27,6 +27,7 @@ for (var i = 10; i < 20; i++) {
 
 
 
-document.addEventListener('keydown',(ev) => { p.onKeypress(ev) });
+document.addEventListener('keydown',(ev) => { console.log('$$$$'); p.onKeypress(ev) });
+document.addEventListener('keyup',(ev) => { console.log('##'); });
 w.fire(window, 10);
 
