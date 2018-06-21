@@ -9,7 +9,7 @@ pusheen.src = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD//gA7Q1JFQVRPUj
 
 let canvas = document.getElementById('canv');
 
-let p = new Player(500, 150);
+let p = new Player(500, 10);
 p.setImage(pusheen);
 let w = new World(canvas);
 w.registerObj(p);
