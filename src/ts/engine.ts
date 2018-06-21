@@ -10,6 +10,7 @@ abstract class Obj {
     ax : number = 0;
     ay : number = 0;
     timeStamp : number;
+    public t : number; // t between last step and this
     world : World;
     img : HTMLImageElement;
 
@@ -26,13 +27,14 @@ abstract class Obj {
     }
 
     public updateTimestamp() : void {
-        this.timeStamp = new Date().getTime();
+        let currentTimestamp = new Date().getTime();
+        this.t = currentTimestamp - this.timeStamp;
+        this.timeStamp = currentTimestamp;
     }
 
     public step() : void {
-        let t = new Date().getTime() - this.timeStamp;
-        this.stepBehavior();
         this.updateTimestamp();
+        this.stepBehavior();
     }
 
     public stepBehavior() : void {
@@ -51,11 +53,18 @@ export class Player extends Obj {
 
     public onKeypress(ev : KeyboardEvent) {
         let vv = 5;
+        let AA = 5;
+        let aMax = 20;
+        let aMin = -20;
         if (ev.key == 'ArrowRight') {
-            this.vx += vv;
+            // this.vx += vv;
+            this.ax += 5;
+            if (this.ax > aMax ) this.ax = aMax;
         }
         if (ev.key == 'ArrowLeft') {
-            this.vx -= vv;
+            // this.vx -= vv;
+            this.ax -= 5;
+            if (this.ax < aMin ) this.ax = aMin;            
         }
         if (ev.key == 'ArrowUp') {
             this.vy -= vv * 5;
@@ -66,8 +75,17 @@ export class Player extends Obj {
     }
 
     public stepBehavior() : void {
-        this.vx = this.vx * 0.8;
-        this.vy = this.vy * 0.8;
+        this.ax *= 0.97;
+        this.vx *= 0.99;
+        console.log('# ax', this.ax);
+        // console.log('# t', this.t);
+        
+
+        this.vx = this.vx + this.ax * (this.t / 1000);
+
+        console.log('# vx', this.vx);
+
+        // this.vy = this.vy * 0.8;
         
         let roundFunc : any;
         if (this.vx >= 0) roundFunc = Math.floor;
