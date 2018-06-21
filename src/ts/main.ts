@@ -15,12 +15,9 @@ let w = new World(canvas);
 w.registerObj(p);
 
 
-for (var i = 1; i < 30; i++) {
+for (var i = 5; i < 30; i++) {
     let b = new Brick(i * 30, 300);
     b.setImage(imgBrick);
-    // b.w = 25;
-    // b.h = 30;
-    // b.img = ;
     w.registerObj(b);   
     
 }

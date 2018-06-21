@@ -1,4 +1,4 @@
-const G : number = 3;
+const G : number = 10;
      
 abstract class Obj {
     x : number;
@@ -52,47 +52,54 @@ export class Player extends Obj {
     }
 
     public onKeypress(ev : KeyboardEvent) {
-        let vv = 5;
-        let AA = 5;
-        let aMax = 20;
-        let aMin = -20;
+        let AAx = 10;
+        let AAy = 10;
+
         if (ev.key == 'ArrowRight') {
-            // this.vx += vv;
-            this.ax += 5;
-            if (this.ax > aMax ) this.ax = aMax;
+            this.ax += AAx;
         }
         if (ev.key == 'ArrowLeft') {
-            // this.vx -= vv;
-            this.ax -= 5;
-            if (this.ax < aMin ) this.ax = aMin;            
+            this.ax -= AAx;
         }
         if (ev.key == 'ArrowUp') {
-            this.vy -= vv * 5;
+            this.ay -= AAy;
         }    
         if (ev.key == 'ArrowDown') {
-            this.vy += vv;
-        }               
+            this.ay += AAy;
+        } 
+        this.cutAcceleration();              
+    }
+
+    private cutAcceleration() : void {
+        let aMax = 20;
+        let aMin = -20;
+        if (this.ax > aMax ) this.ax = aMax;
+        if (this.ax < aMin ) this.ax = aMin;            
+        if (this.ay > aMax ) this.ay = aMax;
+        if (this.ay < aMin ) this.ay = aMin;   
     }
 
     public stepBehavior() : void {
         this.ax *= 0.97;
-        this.vx *= 0.99;
-        console.log('# ax', this.ax);
+        this.ay *= 0.97;
+        this.vx *= 0.97;
+        this.vy *= 0.97;
+        console.log('# ax, ay', this.ax, this.ay);
         // console.log('# t', this.t);
-        
+
+        this.cutAcceleration();              
+
 
         this.vx = this.vx + this.ax * (this.t / 1000);
+        this.vy = this.vy + (this.ay + G) * (this.t / 1000);
 
-        console.log('# vx', this.vx);
 
-        // this.vy = this.vy * 0.8;
-        
         let roundFunc : any;
         if (this.vx >= 0) roundFunc = Math.floor;
         else roundFunc = Math.ceil;
 
         let dx = roundFunc(this.vx * 2);
-        let dy = roundFunc(this.vy * 2 + G);
+        let dy = roundFunc(this.vy * 2);
 
         while (true) {
             let newX = this.x + dx;
