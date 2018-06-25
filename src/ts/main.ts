@@ -1,4 +1,4 @@
-import {Player, World, Brick} from "./engine";
+import {Player, World, Brick, View} from "./engine";
 
 var imgBrick = new Image();
 imgBrick.src = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD//gA7Q1JFQVRPUjogZ2QtanBlZyB2MS4wICh1c2luZyBJSkcgSlBFRyB2ODApLCBxdWFsaXR5ID0gOTAK/9sAQwADAgIDAgIDAwMDBAMDBAUIBQUEBAUKBwcGCAwKDAwLCgsLDQ4SEA0OEQ4LCxAWEBETFBUVFQwPFxgWFBgSFBUU/9sAQwEDBAQFBAUJBQUJFA0LDRQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU/8AAEQgAHgAeAwEiAAIRAQMRAf/EAB8AAAEFAQEBAQEBAAAAAAAAAAABAgMEBQYHCAkKC//EALUQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+v/EAB8BAAMBAQEBAQEBAQEAAAAAAAABAgMEBQYHCAkKC//EALURAAIBAgQEAwQHBQQEAAECdwABAgMRBAUhMQYSQVEHYXETIjKBCBRCkaGxwQkjM1LwFWJy0QoWJDThJfEXGBkaJicoKSo1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoKDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uLj5OXm5+jp6vLz9PX29/j5+v/aAAwDAQACEQMRAD8A8j0XxBqkWj2KJqd2iLBGFVZ2AA2jgc1T8aazf3/g7WoLq+ubmBrVi0csrMpwQRkE44IBrAbw9p8fgq6kihmhuINJlnS4W+uSwdIGdTgyFeqjIxirln4d0q80qBbiwafzYV8zffXXz5AzkCbFfnChTjLn7Pt8z9dlUrTg6XLvHv8ALsdVH4l1cRrjVb0cf8/D/wCNb3g/Vb3UtTlivL2e7jEJYJNKzgHcvOCevJ/OvLvFGhWNt4euri2hmtZoXt9rx3tychriKNgQ0hGCrn3966bQfAek6/ePbkXthtjMnm2WpXSOeQMEmU8c/oKwqU6apuV7fL0OmnVrOpycl7W05t9+68jnLLS9bvfDYtm1TSI1urBrd8W05KrJEUbB3dQGNJqceu6BoE9zDfaRdfY4Q3lGCdSyjAPOcZxzVXS/Gtium2imK4yIkH3V/uj3qp4s8c2C+F9VBhuMvblBhV6kgf3q7oxm5qLjpft/wTz5ulGm5qo7pd/K/bubuo6LrOq6bLaSatpCRzGNmK2s+RskSQY+b1QD6Zrb0C18Yx3jnRr/AMOTXXlnct5b3KpsyMkbWznOP1rmk8bWOxf3Vx0/ur/8VWz4Y+Jul6NfyTTW92ytEUAjRCc5B7sPSueoqvI0oJ+Vv+CdNP2POm6jXnf/AIB//9k=';
@@ -6,25 +6,31 @@ imgBrick.src = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD//gA7Q1JFQVRPU
 var pusheen = new Image();
 pusheen.src = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD//gA7Q1JFQVRPUjogZ2QtanBlZyB2MS4wICh1c2luZyBJSkcgSlBFRyB2ODApLCBxdWFsaXR5ID0gOTAK/9sAQwADAgIDAgIDAwMDBAMDBAUIBQUEBAUKBwcGCAwKDAwLCgsLDQ4SEA0OEQ4LCxAWEBETFBUVFQwPFxgWFBgSFBUU/9sAQwEDBAQFBAUJBQUJFA0LDRQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU/8AAEQgAHgAeAwEiAAIRAQMRAf/EAB8AAAEFAQEBAQEBAAAAAAAAAAABAgMEBQYHCAkKC//EALUQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+v/EAB8BAAMBAQEBAQEBAQEAAAAAAAABAgMEBQYHCAkKC//EALURAAIBAgQEAwQHBQQEAAECdwABAgMRBAUhMQYSQVEHYXETIjKBCBRCkaGxwQkjM1LwFWJy0QoWJDThJfEXGBkaJicoKSo1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoKDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uLj5OXm5+jp6vLz9PX29/j5+v/aAAwDAQACEQMRAD8A/VHAr5t+P3x3lttfvfBOlyXelraR/adU1mJ2gMUQUP5SOdpVjkMzoThCOQXBX234l+OLT4beA9b8S3uwwadbNKEZtokkPEaZ7bnKrn3r4z0htV/sx7nW5or/AFy5eS6vJrfhZZnYsdue3IA6AAAcACuSvNpcqN6UU3dnVWv7SvjKPRF0hta8PqscEajWxJuvVi/hkZHzGXZdnzEbcuTtOAD9BfBX4ljx54WgivZJ5desVNvqDm1dI2kQ4D79ojy67JNinIEg4FfCDabfyaNaCTwtJNqogggliLReQHWRS10MxFvOOATmT5stvABIH03+zhf2Oj+P9dtpYbaObUbBblLlkUODE6pIC/XDCSDAzj92a5qFaUpanbiqFOnFezlfqdn+1RGl74E0nT7iNbiyvNXiS4hkXKSKkU0qhgeoDxxn6gV4LXd+Jfgv8dvGsqxa7450K606O4juEtYk8qPckxYcLbbwCmEwZGI55OcUt5+z38QjCwtH8NJLkbXmv7hl685Atx2z3q6ilOXMkzmg4xVro4P8a5P4k6heaZo1vcWEjxXH2gRl4zg7SrEjI7ZC/lXtv/DP3jvPTw7/AODKf/5GrqPhd8CtV0TxVd6n4rTRr6z+xfZrazgke4COXDM53xoOQqjoT6EZbdn7KctLWK9pGOt7n//Z";
 
-
-let canvas = document.getElementById('canv');
+let w = new World();
 
 let p = new Player(500, 10);
 p.setImage(pusheen);
-let w = new World(canvas);
+
 w.registerObj(p);
 
-
-for (var i = 5; i < 30; i++) {
-    let b = new Brick(i * 30, 300);
+let drawBrick = function(world: World, x: number, y: number) {
+    let b = new Brick(x, y);
     b.setImage(imgBrick);
-    w.registerObj(b);   
-    
+    world.registerObj(b); 
 }
 
+for (var i = 5; i < 20; i++) {
+    drawBrick(w, i * 30, 300); 
+}
 
+for (var i = 20; i < 30; i++) {
+    drawBrick(w, i * 30, 350); 
+}
+
+let canvas = document.getElementById('canv');
+let v = new View(canvas, w);
 
 document.addEventListener('keydown',(ev) => { console.log('$$$$'); p.onKeypress(ev) });
 document.addEventListener('keyup',(ev) => { console.log('##'); });
-w.fire(window, 10);
+v.fire(window, 10);
 

@@ -54,20 +54,25 @@ export class Player extends Obj {
     public onKeypress(ev : KeyboardEvent) {
         let AAx = 10;
         let AAy = 10;
+        let vJump = 8;
+        let vRun = 3;
 
         if (ev.key == 'ArrowRight') {
             this.ax += AAx;
+            this.vx += vRun;
         }
         if (ev.key == 'ArrowLeft') {
             this.ax -= AAx;
         }
         if (ev.key == 'ArrowUp') {
             this.ay -= AAy;
+            this.vy -= vJump;
         }    
         if (ev.key == 'ArrowDown') {
             this.ay += AAy;
         } 
-        this.cutAcceleration();              
+        this.cutAcceleration(); 
+        this.roundAllParams();            
     }
 
     private cutAcceleration() : void {
@@ -79,6 +84,13 @@ export class Player extends Obj {
         if (this.ay < aMin ) this.ay = aMin;   
     }
 
+    private roundAllParams() : void {
+        // if (this.ay < 1 && this.ay > -1) this.ay = 0;
+        // if (this.ax < 1 && this.ax > -1) this.ax = 0;
+        // if (this.vy < 0.01 && this.vy > -0.01) this.vy = 0;
+        // if (this.vx < 0.01 && this.vx > -0.01) this.vx = 0;
+    }
+
     public stepBehavior() : void {
         this.ax *= 0.97;
         this.ay *= 0.97;
@@ -88,18 +100,18 @@ export class Player extends Obj {
         // console.log('# t', this.t);
 
         this.cutAcceleration();              
-
+        this.roundAllParams();
 
         this.vx = this.vx + this.ax * (this.t / 1000);
-        this.vy = this.vy + (this.ay + G) * (this.t / 1000);
+        this.vy = this.vy + (this.ay + G ) * (this.t / 1000);
 
 
         let roundFunc : any;
         if (this.vx >= 0) roundFunc = Math.floor;
         else roundFunc = Math.ceil;
 
-        let dx = roundFunc(this.vx * 2);
-        let dy = roundFunc(this.vy * 2);
+        let dx = roundFunc(this.vx);
+        let dy = roundFunc(this.vy);
 
         while (true) {
             let newX = this.x + dx;
@@ -110,13 +122,25 @@ export class Player extends Obj {
                 this.y = newY;
                 break;
             } else if (dy != 0) {
+                // it a collision so we need to null the V
+                this.vy = 0;
+                this.ay = 0;
                 if (dy > 0) dy -= 1;
                 else if (dy < 0) dy += 1;
             } else {
+                // can't be any lower
                 break;
             }
             
         }
+        this.showData();
+    }
+
+    private showData() : void {
+        document.getElementById('ax').innerText = Math.round(this.ax).toString();
+        document.getElementById('ay').innerText = Math.round(this.ay).toString();
+        document.getElementById('vx').innerText = Math.round(this.vx).toString();
+        document.getElementById('vy').innerText = Math.round(this.vy).toString();
     }
 }
 
@@ -128,12 +152,9 @@ export class Brick extends Obj {
 
 export class World {
     public objList : Obj[] = [];
-    private canvas;
-    private ctx : CanvasRenderingContext2D; 
 
-    constructor(canvas) {
-        this.canvas = canvas;
-        this.ctx = canvas.getContext('2d');
+    constructor() {
+
     }
 
     public registerObj(objToRegister : Obj) : void {
@@ -141,26 +162,10 @@ export class World {
         objToRegister.subscribeToWorld(this);
     }
 
-    public draw() : void {
-        for (let o of this.objList) {
-            if (o.img) {
-                this.ctx.drawImage(o.img, o.x, o.y);
-            } else {
-                this.ctx.fillRect(o.x, o.y, o.w, o.h);
-            }
-        }
-    }
-
     public step() : void {
         for (let o of this.objList) {
             o.step();
         }
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.draw();
-    }
-
-    public fire(win : Window, ms : number) : void {
-        win.setInterval(() => {this.step();}, ms);
     }
 
     public isItCollision(obj : Obj, x1, y1, x2, y2) {
@@ -193,7 +198,44 @@ export class World {
     }
 }
 
+export class View {
+    public startX : number = 0;
+    public startY : number = 0;
 
+    private canvas;
+    private ctx : CanvasRenderingContext2D; 
+    private world : World;
+
+    constructor(canvas, world : World) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
+
+        this.world = world;
+    }
+
+    public draw() : void {
+        for (let o of this.world.objList) {
+            let renderedX = o.x - this.startX;
+            let renderedY = o.y - this.startY;
+
+            if (o.img) {
+                this.ctx.drawImage(o.img, renderedX, renderedY);
+            } else {
+                this.ctx.fillRect(renderedX, renderedY, o.w, o.h);
+            }
+        }
+    }
+
+    public fire(win : Window, ms : number) : void {
+        win.setInterval(() => {this.step();}, ms);
+    }
+
+    public step() : void {
+        this.world.step();
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.draw();        
+    }
+}
 
 
 
