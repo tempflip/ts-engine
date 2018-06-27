@@ -96,7 +96,7 @@ export class Player extends Obj {
         this.ay *= 0.97;
         this.vx *= 0.97;
         this.vy *= 0.97;
-        console.log('# ax, ay', this.ax, this.ay);
+        // console.log('# ax, ay', this.ax, this.ay);
         // console.log('# t', this.t);
 
         this.cutAcceleration();              
@@ -205,6 +205,10 @@ export class View {
     private canvas;
     private ctx : CanvasRenderingContext2D; 
     private world : World;
+    public anchor : Obj;
+    public anchorPosX : number= 300;
+    public anchorToleranceX = 50;
+    public background : HTMLImageElement;
 
     constructor(canvas, world : World) {
         this.canvas = canvas;
@@ -213,7 +217,23 @@ export class View {
         this.world = world;
     }
 
+    private adjustRenderingPosition() {
+        if (!this.anchor) return;
+
+        let posDiffAbs = Math.abs((this.anchor.x - this.startX) - this.anchorPosX);
+        // console.log(posDiffAbs);
+        // if (posDiffAbs < this.anchorToleranceX) return;
+
+
+        // if (posDiffAbs > 100) {
+            this.startX = this.anchor.x - this.anchorPosX;
+        // }
+            
+        if (this.startX < 0) this.startX = 0;
+    }
+
     public draw() : void {
+        this.adjustRenderingPosition();        
         for (let o of this.world.objList) {
             let renderedX = o.x - this.startX;
             let renderedY = o.y - this.startY;
@@ -225,6 +245,10 @@ export class View {
             }
         }
     }
+    
+    public renderBackground() {
+        this.ctx.drawImage(this.background, 0 - this.startX / 3, 0, 5000, 1000);
+    }
 
     public fire(win : Window, ms : number) : void {
         win.setInterval(() => {this.step();}, ms);
@@ -233,6 +257,7 @@ export class View {
     public step() : void {
         this.world.step();
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.renderBackground();
         this.draw();        
     }
 }
