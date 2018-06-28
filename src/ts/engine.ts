@@ -253,14 +253,19 @@ export class View {
 
     private drawImg(o, renderedX, renderedY) : void {
         if (o.toMirror == false) {
-            this.ctx.drawImage(o.img, renderedX, renderedY);
+            this.ctx.drawImage(o.img, renderedX - o.w, renderedY);
         } else {
+            console.log(o.renderedX, o.renderedY);
             this.ctx.save();
-            // this.ctx.scale(-1, 1);
+            this.ctx.scale(-1,1);
+            // this.ctx.drawImage(o.img, - o.renderedX, o.renderedY);
+            this.ctx.drawImage(o.img, - renderedX, renderedY);
+            // this.ctx.translate(renderedX + 50, renderedY + 30);
+            // this.ctx.rotate(Math.PI);
+            // this.ctx.drawImage(o.img, 0, 0);
 
-            this.ctx.translate(renderedX + 50, renderedY + 30);
-            this.ctx.rotate(Math.PI);
-            this.ctx.drawImage(o.img, 0, 0);
+
+
             this.ctx.restore();
         }        
     }
