@@ -13,6 +13,7 @@ abstract class Obj {
     public t : number; // t between last step and this
     world : World;
     img : HTMLImageElement;
+    public toMirror : Boolean = false;
 
     constructor(x : number, y : number) {
         this.x = x;
@@ -47,6 +48,7 @@ abstract class Obj {
 }
 
 export class Player extends Obj {
+
     constructor(x : number, y : number) {
         super(x,y);
     }
@@ -60,9 +62,12 @@ export class Player extends Obj {
         if (ev.key == 'ArrowRight') {
             this.ax += AAx;
             this.vx += vRun;
+            this.toMirror = false;
         }
         if (ev.key == 'ArrowLeft') {
             this.ax -= AAx;
+            this.vx -= vRun;
+            this.toMirror = true;
         }
         if (ev.key == 'ArrowUp') {
             this.ay -= AAy;
@@ -239,11 +244,25 @@ export class View {
             let renderedY = o.y - this.startY;
 
             if (o.img) {
-                this.ctx.drawImage(o.img, renderedX, renderedY);
+                this.drawImg(o, renderedX, renderedY);
             } else {
                 this.ctx.fillRect(renderedX, renderedY, o.w, o.h);
             }
         }
+    }
+
+    private drawImg(o, renderedX, renderedY) : void {
+        if (o.toMirror == false) {
+            this.ctx.drawImage(o.img, renderedX, renderedY);
+        } else {
+            this.ctx.save();
+            // this.ctx.scale(-1, 1);
+
+            this.ctx.translate(renderedX + 50, renderedY + 30);
+            this.ctx.rotate(Math.PI);
+            this.ctx.drawImage(o.img, 0, 0);
+            this.ctx.restore();
+        }        
     }
     
     public renderBackground() {
