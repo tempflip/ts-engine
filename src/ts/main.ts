@@ -15,7 +15,7 @@ background.src = '../assets/background1.jpeg';
 
 let w = new World();
 
-let p = new Player(500, 10);
+let p = new Player(100, 0);
 p.setImage(pusheen);
 p.w = 50;
 p.h = 30;
@@ -25,11 +25,13 @@ w.registerObj(p);
 let drawBrick = function(world: World, x: number, y: number) {
     let b = new Brick(x, y);
     b.setImage(imgBrick);
+    b.w = 30;
+    b.h = 30;
     world.registerObj(b); 
 }
 
 for (var i = 0; i < 20; i++) {
-    drawBrick(w, i * 30, 300); 
+    drawBrick(w, i * 30, 320); 
 }
 
 for (var i = 20; i < 30; i++) {
@@ -37,10 +39,17 @@ for (var i = 20; i < 30; i++) {
 }
 
 for (var i = 30; i < 35; i++) {
-    drawBrick(w, i * 30, 400); 
+    drawBrick(w, i * 30, 320); 
 }
 for (var i = 35; i < 50; i++) {
     drawBrick(w, i * 30, 200); 
+}
+
+for (var i = 0; i < 20; i++) {
+    drawBrick(w, 5, i * 30); 
+}
+for (var i = 5; i < 20; i++) {
+    drawBrick(w, 700, i * 30); 
 }
 
 let canvas = document.getElementById('canv');

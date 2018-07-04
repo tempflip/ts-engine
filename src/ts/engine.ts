@@ -1,8 +1,8 @@
 const G : number = 10;
      
 abstract class Obj {
-    x : number;
-    y : number;
+    public x : number;
+    private _y : number;
     w : number = 50;
     h : number = 50;
     vx : number = 0;
@@ -19,6 +19,14 @@ abstract class Obj {
         this.x = x;
         this.y = y;
         this.updateTimestamp();
+    }
+
+    get y() {
+        return this._y;
+    }
+
+    set y(y : number) {
+        this._y = y;
     }
 
     public setImage(img :HTMLImageElement) {
@@ -48,6 +56,11 @@ abstract class Obj {
 }
 
 export class Player extends Obj {
+    public get floorTouch() : Boolean {
+        let coll = this.world.isItCollision(this, this.x, this.y + 1, this.x + this.w, this.y + 1 + this.h);
+        console.log('coll', coll);
+        return coll;
+    }
 
     constructor(x : number, y : number) {
         super(x,y);
@@ -58,6 +71,8 @@ export class Player extends Obj {
         let AAy = 10;
         let vJump = 8;
         let vRun = 3;
+
+        if (this.floorTouch == false) return;
 
         if (ev.key == 'ArrowRight') {
             this.ax += AAx;
@@ -95,9 +110,15 @@ export class Player extends Obj {
         this.vy *= 0.97;
 
         this.cutAcceleration();              
-
+        
+        let gravity = G;
+        // on the floor we don't need gravity
+        if (this.floorTouch == true) {
+            gravity = 0;
+        }
+        
         this.vx = this.vx + this.ax * (this.t / 1000);
-        this.vy = this.vy + (this.ay + G ) * (this.t / 1000);
+        this.vy = this.vy + (this.ay + gravity ) * (this.t / 1000);
 
 
         let roundFunc : any;
@@ -110,17 +131,26 @@ export class Player extends Obj {
         while (true) {
             let newX = this.x + dx;
             let newY = this.y + dy;
-
+            
             if (!this.world.isItCollision(this, newX, newY, newX + this.w, newY + this.h)) {
                 this.x = newX;
                 this.y = newY;
                 break;
-            } else if (dy != 0) {
-                // it a collision so we need to null the V
+            } else if (dy != 0 || dx != 0) {
+                // its a collision so we need to null the V
                 this.vy = 0;
                 this.ay = 0;
+
+                this.vx = 0;
+                this.ax = 0;
+
                 if (dy > 0) dy -= 1;
                 else if (dy < 0) dy += 1;
+
+                if (dx > 0) dx -= 1;
+                else if (dx < 0) dx += 1;
+
+                // if (dy == 0) this.floorTouch = true;
             } else {
                 // can't be any lower
                 break;
@@ -131,6 +161,9 @@ export class Player extends Obj {
     }
 
     private showData() : void {
+        document.getElementById('x').innerText = Math.round(this.x).toString();
+        document.getElementById('y').innerText = Math.round(this.y).toString();
+        document.getElementById('floorTouch').innerText = this.floorTouch.toString();
         document.getElementById('ax').innerText = Math.round(this.ax).toString();
         document.getElementById('ay').innerText = Math.round(this.ay).toString();
         document.getElementById('vx').innerText = Math.round(this.vx).toString();
@@ -241,20 +274,13 @@ export class View {
     }
 
     private drawImg(o, renderedX, renderedY) : void {
+        
         if (o.toMirror == false) {
-            this.ctx.drawImage(o.img, renderedX - o.w, renderedY);
+            this.ctx.drawImage(o.img, renderedX, renderedY);
         } else {
-            console.log(o.renderedX, o.renderedY);
             this.ctx.save();
             this.ctx.scale(-1,1);
-            // this.ctx.drawImage(o.img, - o.renderedX, o.renderedY);
-            this.ctx.drawImage(o.img, - renderedX, renderedY);
-            // this.ctx.translate(renderedX + 50, renderedY + 30);
-            // this.ctx.rotate(Math.PI);
-            // this.ctx.drawImage(o.img, 0, 0);
-
-
-
+            this.ctx.drawImage(o.img, - renderedX - o.w, renderedY);
             this.ctx.restore();
         }        
     }
