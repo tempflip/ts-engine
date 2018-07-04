@@ -77,7 +77,6 @@ export class Player extends Obj {
             this.ay += AAy;
         } 
         this.cutAcceleration(); 
-        this.roundAllParams();            
     }
 
     private cutAcceleration() : void {
@@ -89,23 +88,13 @@ export class Player extends Obj {
         if (this.ay < aMin ) this.ay = aMin;   
     }
 
-    private roundAllParams() : void {
-        // if (this.ay < 1 && this.ay > -1) this.ay = 0;
-        // if (this.ax < 1 && this.ax > -1) this.ax = 0;
-        // if (this.vy < 0.01 && this.vy > -0.01) this.vy = 0;
-        // if (this.vx < 0.01 && this.vx > -0.01) this.vx = 0;
-    }
-
     public stepBehavior() : void {
         this.ax *= 0.97;
         this.ay *= 0.97;
         this.vx *= 0.97;
         this.vy *= 0.97;
-        // console.log('# ax, ay', this.ax, this.ay);
-        // console.log('# t', this.t);
 
         this.cutAcceleration();              
-        this.roundAllParams();
 
         this.vx = this.vx + this.ax * (this.t / 1000);
         this.vy = this.vy + (this.ay + G ) * (this.t / 1000);
